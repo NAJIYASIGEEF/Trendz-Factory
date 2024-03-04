@@ -30,6 +30,7 @@ urlpatterns = [
     path("products/<int:pk>/add_to_basket/",views.AddToBasketView.as_view(),name="addto-basket"),
     path("basket/items/all/",views.BasketItemListView.as_view(),name="basket-items"),
     path("basket/items/<int:pk>/remove",views.BasketItemRemoveView.as_view(),name="basketitem-remove"),
+    path("basket/item/<int:pk>/qty/change/",views.CartItemUpdateQuantityView.as_view(),name="editcart-qty"),
     
 
 

@@ -7,8 +7,8 @@
 {%endblock%}
 
 {%block main_block%}
+<h2>{{msg}}</h2>
 
-{{msg}}
 <div class="container cart">
     <table>
       <tr>
@@ -26,6 +26,7 @@
             <div>
               <p>{{bi.product_object.title}}</p>
               <span>Price: {{bi.product_object.price}}</span> <br />
+              <p>Size: {{bi.size_object}}</p>
               <a href="{%url 'basketitem-remove' bi.id%}">remove</a>
             </div>
           </div>
@@ -33,20 +34,29 @@
         <td>
           <div class="mb-2 flex">
             <div class="min-w-24 flex">
-              <button type="button" class="py-2 btn btn-dark">
-                -
-              </button>
-              <input
-                type="text"
-                class="mx-1 h-7 w-9 rounded-md border text-center"
-                value="1"
-              />
-              <button
-                type="button"
-                class="py-2 btn btn-dark"
-              >
-                +
-              </button>
+              <form action="{%url 'editcart-qty' bi.id%}" method="post">
+                {%csrf_token%}
+                {%if bi.qty > 1%}
+                <button type="submit" class="py-2 btn btn-dark" name="counterButton" value="-">
+                  -
+                </button>
+                {%endif%}
+                <input
+                  type="text"
+                  class="mx-1 h-7 w-9 rounded-md border text-center"
+                  value="{{bi.qty}}"
+                  disabled
+                />
+                <button
+                  type="submit"
+                  class="py-2 btn btn-dark"
+                  name="counterButton"
+                  value="+"
+                >
+                  +
+                </button>
+
+              </form>
             </div>
         
         </td>
