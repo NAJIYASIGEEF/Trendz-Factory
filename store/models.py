@@ -81,3 +81,25 @@ def create_basket(sender,instance,created,**kwargs):
         Basket.objects.create(owner=instance)
 
 post_save.connect(create_basket,sender=User)
+
+
+class Order(models.Model):
+
+    user_object=models.ForeignKey(User,on_delete=models.CASCADE,related_name="purchase")
+    delivery_address=models.CharField(max_length=200)
+    phone=models.CharField(max_length=12)
+    email=models.CharField(max_length=200,null=True)
+    is_paid=models.BooleanField(default=False)
+    total=models.PositiveIntegerField()
+
+class OrderItems(models.Model):
+    order_object=models.ForeignKey(Order,on_delete=models.CASCADE,related_name="purchaseitems")
+    basket_item_object=models.ForeignKey(BasketItem,on_delete=models.CASCADE)
+    option=(
+        ("order-placed","order-placed"),
+        ("intransit","intransit"),
+        ("dispatched","dispatched"),
+        ("delivered","delivered"),
+        ("cancelled","cancelled")
+    )
+    status=models.CharField(max_length=200,choices=option,default="order-placed")
