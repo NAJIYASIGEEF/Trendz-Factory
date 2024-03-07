@@ -31,7 +31,8 @@ urlpatterns = [
     path("basket/items/all/",views.BasketItemListView.as_view(),name="basket-items"),
     path("basket/items/<int:pk>/remove",views.BasketItemRemoveView.as_view(),name="basketitem-remove"),
     path("basket/item/<int:pk>/qty/change/",views.CartItemUpdateQuantityView.as_view(),name="editcart-qty"),
-    path("checkout/",views.CheckOutView.as_view(),name='checkout')
+    path("checkout/",views.CheckOutView.as_view(),name='checkout'),
+    path("signout/",views.SignOutView.as_view(),name="signout")
     
 
 
