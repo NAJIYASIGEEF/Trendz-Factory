@@ -11,8 +11,8 @@ from store.models import Product,BasketItem,Size,Order,OrderItems
 from store.decorators import signin_required,owner_permission_required
 from store.forms import RegistrationForm,LoginForm
 
-KEY_ID=""
-KEY_SECRET=""
+KEY_ID="rzp_test_lf0P6nYZOhoTt8"
+KEY_SECRET="EUqpTpRfvudgs5TTA5x85TMU"
 
 
 # url:localhost:8000/register/
@@ -162,11 +162,11 @@ class CheckOutView(View):
 
         finally:
             # print(email,phone,address)
-            print("text block 2")
+            
             print(payment_method)
-            print(order_obj)
+            
             if payment_method=="online" and order_obj:
-                print("text block 3")
+                
                 client = razorpay.Client(auth=(KEY_ID,KEY_SECRET))
 
                 data = { "amount": order_obj.get_order_total*100, "currency": "INR", "receipt": "order_rcptid_11" }
@@ -174,6 +174,12 @@ class CheckOutView(View):
                 payment = client.order.create(data=data)        
 
                 print("payment initiate",payment)
+                context={
+                    "key":KEY_ID,
+                    "order_id":payment.get("id"),
+                    "amount":payment.get("amount")
+                }
+                return render(request,"payment.html",{"context":context})
 
             return redirect("index")
     
