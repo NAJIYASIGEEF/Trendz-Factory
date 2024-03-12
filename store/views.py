@@ -1,3 +1,5 @@
+import razorpay
+
 from django.shortcuts import render,redirect
 from django.views.generic import View,TemplateView
 from django.contrib.auth import authenticate,login,logout
@@ -8,6 +10,9 @@ from django.views.decorators.cache import never_cache
 from store.models import Product,BasketItem,Size,Order,OrderItems
 from store.decorators import signin_required,owner_permission_required
 from store.forms import RegistrationForm,LoginForm
+
+KEY_ID=""
+KEY_SECRET=""
 
 
 # url:localhost:8000/register/
@@ -125,6 +130,7 @@ class CheckOutView(View):
         email=request.POST.get("email")
         phone=request.POST.get("phone")
         address=request.POST.get("address")
+        payment_method=request.POST.get("payment")
 
 
         #create order instace
@@ -133,7 +139,8 @@ class CheckOutView(View):
             delivery_address=address,
             phone=phone,
             email=email,
-            total=request.user.cart.basket_total
+            total=request.user.cart.basket_total,
+            payment=payment_method
         )
 
         #create order_item instance
@@ -148,12 +155,26 @@ class CheckOutView(View):
                 )
                 bi.is_order_placed=True
                 bi.save()
+                
 
         except:
             order_obj.delete()
 
         finally:
             # print(email,phone,address)
+            print("text block 2")
+            print(payment_method)
+            print(order_obj)
+            if payment_method=="online" and order_obj:
+                print("text block 3")
+                client = razorpay.Client(auth=(KEY_ID,KEY_SECRET))
+
+                data = { "amount": order_obj.get_order_total*100, "currency": "INR", "receipt": "order_rcptid_11" }
+
+                payment = client.order.create(data=data)        
+
+                print("payment initiate",payment)
+
             return redirect("index")
     
  
@@ -166,8 +187,9 @@ class SignOutView(View):
 
 class OrderSummaryView(View):
     def get(self,request,*args,**kwargs):
-        qs=Order.objects.filter(user_object=request.user)
+        qs=Order.objects.filter(user_object=request.user).exclude(status="cancelled")
         return render(request,"order_summary.html",{"data":qs})
+
 
 class OrderItemRemoveView(View):
 
