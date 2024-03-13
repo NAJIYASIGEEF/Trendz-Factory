@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_exempt
 
 from store.models import Product,BasketItem,Size,Order,OrderItems
 from store.decorators import signin_required,owner_permission_required
@@ -204,5 +205,10 @@ class OrderItemRemoveView(View):
         OrderItems.objects.get(id=id).delete()
         return redirect("order-summary")
 
+@method_decorator(csrf_exempt,name="dispatch")
+class PaymentVerificationView(View):
 
+    def post(self,request,*args,**kwargs):
+        print("======================================",request.POST)
+        return render (request,"success.html")
 
