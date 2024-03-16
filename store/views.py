@@ -8,7 +8,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 
-from store.models import Product,BasketItem,Size,Order,OrderItems,Category
+from store.models import Product,BasketItem,Size,Order,OrderItems,Category,Tag
 from store.decorators import signin_required,owner_permission_required
 from store.forms import RegistrationForm,LoginForm
 
@@ -55,14 +55,21 @@ class SignInView(View):
 
 @method_decorator([signin_required,never_cache],name="dispatch")
 class IndexView(View):
+
     def get(self,request,*args,**kwargs):
         qs=Product.objects.all()
         categories=Category.objects.all()
+        tags=Tag.objects.all()
         print(request.GET)
-        selected_category=request.GET.get("category")
-        if selected_category:
+        if "category" in request.GET:
+            selected_category=request.GET.get("category")
             qs=qs.filter(category_object__name=selected_category)
-        return render(request,"index.html",{"data":qs,"categories":categories})
+        return render(request,"index.html",{"data":qs,"categories":categories,"tags":tags})
+    
+    def post(self,request,*args,**kwargs):
+        tag_name=request.POST.get("tag")
+        qs=Product.objects.filter(tag_objects__name=tag_name)
+        return render(request,"index.html",{"data":qs})
 
 
 @method_decorator([signin_required,never_cache],name="dispatch")   
